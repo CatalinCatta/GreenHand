@@ -1,10 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Game } from 'shared/src/dto/romanianWhist/Game';
-import { PlayerData } from 'shared/src/dto/romanianWhist/PlayerData';
-import { ScoreTableRow } from 'shared/src/dto/romanianWhist/ScoreTable';
-import { Card } from 'shared/src/dto/Card';
-import { CardType } from 'shared/src/dto/enums';
-import { UtilityService } from '../utility/utility.service';
+import { Game, PlayerData, ScoreTableRow } from '@dto/romanianWhist';
+import { Card, CardType } from '@dto';
+import { UtilityService } from '@/romanian-whist';
 
 @Injectable()
 export class GamePhaseService {

@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { UtilityService } from '../utility/utility.service';
-import { Game } from 'shared/src/dto/romanianWhist/Game';
+import { UtilityService } from '@/romanian-whist';
+import { Game } from '@dto/romanianWhist';
 
 @Injectable()
 export class RoomService {

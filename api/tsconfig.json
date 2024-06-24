@@ -1,5 +1,14 @@
 {
   "compilerOptions": {
+      "paths": {
+        "@dto/*": [
+          "src/../../shared/src/dto/*"
+        ],
+        "@dto": [
+          "src/../../shared/src/dto"
+        ],
+        "@/*": ["./src/*"]
+      },
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,

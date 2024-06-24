@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { RomanianWhistModule } from './romanian-whist/romanian-whist.module';
+import { RomanianWhistModule } from '@/romanian-whist';
 
 @Module({
   imports: [RomanianWhistModule],

@@ -1,8 +1,5 @@
 import { Module } from '@nestjs/common';
-import { GamePhaseService } from './game-phase/game-phase.service';
-import { RoomService } from './room/room.service';
-import { RomanianWhistController } from './romanian-whist.controller';
-import { UtilityService } from './utility/utility.service';
+import { GamePhaseService, RomanianWhistController, RoomService, UtilityService } from '@/romanian-whist';
 
 @Module({
   providers: [GamePhaseService, RoomService, UtilityService],

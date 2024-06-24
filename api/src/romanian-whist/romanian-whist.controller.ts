@@ -1,8 +1,7 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put } from '@nestjs/common';
-import { GamePhaseService } from 'src/romanian-whist/game-phase/game-phase.service';
-import { RoomService } from 'src/romanian-whist/room/room.service';
-import { Card } from 'shared/src/dto/Card';
-import { ScoreTableRow } from 'shared/src/dto/romanianWhist/ScoreTable';
+import { GamePhaseService, RoomService } from '@/romanian-whist';
+import { ScoreTableRow } from '@dto/romanianWhist';
+import { Card } from '@dto';
 
 @Controller('romanian-whist')
 export class RomanianWhistController {
