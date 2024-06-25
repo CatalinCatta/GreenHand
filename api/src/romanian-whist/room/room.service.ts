@@ -1,10 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { UtilityService } from '@/romanian-whist';
 import { Game } from '@dto/romanianWhist';
 
 @Injectable()
 export class RoomService {
-  constructor(private readonly utilityService: UtilityService) {}
+  constructor(@Inject(forwardRef(() => UtilityService)) private readonly utilityService: UtilityService) {}
 
   /**
    * Creates a new game and adds it to the list of games.
@@ -27,12 +27,13 @@ export class RoomService {
    * @param {number} gameId - The ID of the game.
    * @param {string} playerName - The name of the player to add.
    * @returns {number} The ID of the newly added player.
-   * @throws {HttpException} If the player name already exists.
+   * @throws {HttpException} If the player name already exists or is invalid.
    */
   addPlayer(gameId: number, playerName: string): number {
     const game: Game = this.utilityService.getGame(gameId);
 
-    if (this.utilityService.existPlayerWithName(game, playerName))
+    if (!playerName || !playerName.trim()) throw new HttpException('You need a playerName', HttpStatus.BAD_REQUEST);
+    if (this.utilityService.doesPlayerExistWithName(game, playerName))
       throw new HttpException('Name already in use', HttpStatus.CONFLICT);
 
     const userId: number = Date.now();
@@ -57,6 +58,6 @@ export class RoomService {
    * @throws {HttpException} If the game ID is invalid.
    */
   removeGame(gameId: number): void {
-    this.utilityService.getAllGames.splice(this.utilityService.getGameIndex(gameId), 1);
+    this.utilityService.getAllGames().splice(this.utilityService.getGameIndex(gameId), 1);
   }
 }

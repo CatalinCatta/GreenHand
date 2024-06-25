@@ -1,8 +1,10 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post } from '@nestjs/common';
 import { GamePhaseService, RoomService } from '@/romanian-whist';
 import { ScoreTableRow } from '@dto/romanianWhist';
-import { Card } from '@dto';
+import { Card, User } from '@dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Romanian-Whist')
 @Controller('romanian-whist')
 export class RomanianWhistController {
   constructor(
@@ -10,31 +12,23 @@ export class RomanianWhistController {
     private readonly roomService: RoomService
   ) {}
 
-  @Get('scoreTable/:gameId')
-  getScoreTable(@Param('gameId') gameId: string): ScoreTableRow[] {
-    const gameIdNumber: number = parseInt(gameId);
-    if (Number.isNaN(gameIdNumber)) throw new HttpException('Invalid game ID', HttpStatus.BAD_REQUEST);
-
-    return this.gamePhaseService.getScoreTable(gameIdNumber);
-  }
-
-  @Post('createRoom')
+  @Post('rooms')
   createRoom(): number {
     return this.roomService.newGame();
   }
 
-  @Post('addPlayer/:gameId')
-  addPlayer(@Body() player: { playerName: string }, @Param('gameId') gameId: string): number {
-    const gameIdNumber: number = parseInt(gameId);
+  @Post('rooms/:gameId/players')
+  addPlayer(@Body() player: User, @Param('gameId') gameId: string): number {
+    const gameIdNumber: number = parseInt(gameId, 10);
     if (Number.isNaN(gameIdNumber)) throw new HttpException('Invalid game ID', HttpStatus.BAD_REQUEST);
 
-    return this.roomService.addPlayer(gameIdNumber, player.playerName);
+    return this.roomService.addPlayer(gameIdNumber, player.name);
   }
 
-  @Delete('removePlayer/:gameId/:userId')
+  @Delete('rooms/:gameId/players/:userId')
   removePlayer(@Param('gameId') gameId: string, @Param('userId') userId: string): void {
-    const gameIdNumber: number = parseInt(gameId);
-    const userIdNumber: number = parseInt(userId);
+    const gameIdNumber: number = parseInt(gameId, 10);
+    const userIdNumber: number = parseInt(userId, 10);
 
     if (Number.isNaN(gameIdNumber)) throw new HttpException('Invalid game ID', HttpStatus.BAD_REQUEST);
     if (Number.isNaN(userIdNumber)) throw new HttpException('Invalid user ID', HttpStatus.BAD_REQUEST);
@@ -42,28 +36,36 @@ export class RomanianWhistController {
     this.roomService.removePlayer(gameIdNumber, userIdNumber);
   }
 
-  @Delete('removeGame/:gameId')
+  @Delete('rooms/:gameId')
   removeGame(@Param('gameId') gameId: string): void {
-    const gameIdNumber: number = parseInt(gameId);
+    const gameIdNumber: number = parseInt(gameId, 10);
 
     if (Number.isNaN(gameIdNumber)) throw new HttpException('Invalid game ID', HttpStatus.BAD_REQUEST);
 
     this.roomService.removeGame(gameIdNumber);
   }
 
-  @Post('startGame/:gameId')
+  @Post('rooms/:gameId/start')
   startGame(@Param('gameId') gameId: string): void {
-    const gameIdNumber: number = parseInt(gameId);
+    const gameIdNumber: number = parseInt(gameId, 10);
 
     if (Number.isNaN(gameIdNumber)) throw new HttpException('Invalid game ID', HttpStatus.BAD_REQUEST);
 
     this.gamePhaseService.initiateGame(gameIdNumber);
   }
 
-  @Get('getPossibleBets/:gameId/:userId')
+  @Get('games/:gameId/score')
+  getScoreTable(@Param('gameId') gameId: string): ScoreTableRow[] {
+    const gameIdNumber: number = parseInt(gameId, 10);
+    if (Number.isNaN(gameIdNumber)) throw new HttpException('Invalid game ID', HttpStatus.BAD_REQUEST);
+
+    return this.gamePhaseService.getScoreTable(gameIdNumber);
+  }
+
+  @Get('games/:gameId/players/:userId/bets')
   getPossibleBets(@Param('gameId') gameId: string, @Param('userId') userId: string): number[] {
-    const gameIdNumber: number = parseInt(gameId);
-    const userIdNumber: number = parseInt(userId);
+    const gameIdNumber: number = parseInt(gameId, 10);
+    const userIdNumber: number = parseInt(userId, 10);
 
     if (Number.isNaN(gameIdNumber)) throw new HttpException('Invalid game ID', HttpStatus.BAD_REQUEST);
     if (Number.isNaN(userIdNumber)) throw new HttpException('Invalid user ID', HttpStatus.BAD_REQUEST);
@@ -71,11 +73,11 @@ export class RomanianWhistController {
     return this.gamePhaseService.getAllPossibleBets(gameIdNumber, userIdNumber);
   }
 
-  @Put('makeBet/:gameId/:userId/:bet')
+  @Post('games/:gameId/players/:userId/bets')
   makeBet(@Param('gameId') gameId: string, @Param('userId') userId: string, @Param('bet') bet: string): void {
-    const gameIdNumber: number = parseInt(gameId);
-    const userIdNumber: number = parseInt(userId);
-    const betNumber: number = parseInt(bet);
+    const gameIdNumber: number = parseInt(gameId, 10);
+    const userIdNumber: number = parseInt(userId, 10);
+    const betNumber: number = parseInt(bet, 10);
 
     if (Number.isNaN(gameIdNumber)) throw new HttpException('Invalid game ID', HttpStatus.BAD_REQUEST);
     if (Number.isNaN(userIdNumber)) throw new HttpException('Invalid user ID', HttpStatus.BAD_REQUEST);
@@ -84,10 +86,10 @@ export class RomanianWhistController {
     this.gamePhaseService.addBet(gameIdNumber, userIdNumber, betNumber);
   }
 
-  @Get('getPlayableCards/:gameId/:userId')
+  @Get('games/:gameId/players/:userId/cards')
   getPlayableCards(@Param('gameId') gameId: string, @Param('userId') userId: string): Card[] {
-    const gameIdNumber: number = parseInt(gameId);
-    const userIdNumber: number = parseInt(userId);
+    const gameIdNumber: number = parseInt(gameId, 10);
+    const userIdNumber: number = parseInt(userId, 10);
 
     if (Number.isNaN(gameIdNumber)) throw new HttpException('Invalid game ID', HttpStatus.BAD_REQUEST);
     if (Number.isNaN(userIdNumber)) throw new HttpException('Invalid user ID', HttpStatus.BAD_REQUEST);
@@ -95,10 +97,10 @@ export class RomanianWhistController {
     return this.gamePhaseService.showPlayableCards(gameIdNumber, userIdNumber);
   }
 
-  @Put('playCard/:gameId/:userId')
+  @Post('games/:gameId/players/:userId/cards')
   playCard(@Param('gameId') gameId: string, @Param('userId') userId: string, @Body() card: Card): void {
-    const gameIdNumber: number = parseInt(gameId);
-    const userIdNumber: number = parseInt(userId);
+    const gameIdNumber: number = parseInt(gameId, 10);
+    const userIdNumber: number = parseInt(userId, 10);
 
     if (Number.isNaN(gameIdNumber)) throw new HttpException('Invalid game ID', HttpStatus.BAD_REQUEST);
     if (Number.isNaN(userIdNumber)) throw new HttpException('Invalid user ID', HttpStatus.BAD_REQUEST);

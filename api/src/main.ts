@@ -8,15 +8,7 @@ async function bootstrap() {
   SwaggerModule.setup(
     'api',
     app,
-    SwaggerModule.createDocument(
-      app,
-      new DocumentBuilder()
-        .setTitle('Cats example')
-        .setDescription('The cats API description')
-        .setVersion('1.0')
-        .addTag('cats')
-        .build()
-    )
+    SwaggerModule.createDocument(app, new DocumentBuilder().setTitle('Green Hand').setVersion('1.0').build())
   );
 
   await app.listen(3000);
